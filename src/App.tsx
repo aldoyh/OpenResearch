@@ -1,41 +1,41 @@
-import React, { useState } from 'react';
-import { SearchSource, SearchResult } from './types';
-import { searchSerper, generateAIResponse } from './services/api';
-import { SearchBar } from './components/SearchBar';
-import { SourceSelector } from './components/SourceSelector';
-import { SearchResults } from './components/SearchResults';
-import { AIResponse } from './components/AIResponse';
-import { Globe } from 'lucide-react';
+import React, { useState } from "react";
+import { SearchSource, SearchResult } from "./types";
+import { searchSerper, generateAIResponse } from "./services/api";
+import { SearchBar } from "./components/SearchBar";
+import { SourceSelector } from "./components/SourceSelector";
+import { SearchResults } from "./components/SearchResults";
+import { AIResponse } from "./components/AIResponse";
+import { Globe, Github } from "lucide-react";
 
 export function App() {
-  const [query, setQuery] = useState('');
-  const [source, setSource] = useState<SearchSource>('search');
+  const [query, setQuery] = useState("");
+  const [source, setSource] = useState<SearchSource>("search");
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [aiResponse, setAIResponse] = useState('');
+  const [aiResponse, setAIResponse] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSourceChange = (newSource: SearchSource) => {
     setSource(newSource);
     setResults([]);
-    setAIResponse('');
-    setError('');
+    setAIResponse("");
+    setError("");
   };
 
   const handleSearch = async () => {
     if (!query.trim()) return;
 
     setLoading(true);
-    setError('');
-    
+    setError("");
+
     try {
       const searchResults = await searchSerper(query, source);
       setResults(searchResults);
-      
+
       const response = await generateAIResponse(query, searchResults, source);
       setAIResponse(response);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -49,10 +49,10 @@ export function App() {
           <div className="flex items-center justify-center gap-3 mb-8">
             <Globe className="w-10 h-10 text-[#1877F2]" />
             <h1 className="text-4xl font-bold text-[#1877F2]">
-              OpenSearch
+              OpenResearch.ai
             </h1>
           </div>
-          
+
           {/* Search Bar */}
           <div className="max-w-3xl mx-auto">
             <SearchBar
@@ -90,10 +90,8 @@ export function App() {
 
           {/* Results */}
           <div className="space-y-6">
-            {aiResponse && !loading && (
-              <AIResponse response={aiResponse} />
-            )}
-            
+            {aiResponse && !loading && <AIResponse response={aiResponse} />}
+
             {results.length > 0 && !loading && (
               <>
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -108,7 +106,8 @@ export function App() {
               <div className="text-center py-12">
                 <Globe className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500">
-                  Enter your search query to explore the web
+                  Enter your search query to discover knowledge across the
+                  internet
                 </p>
               </div>
             )}
@@ -119,9 +118,20 @@ export function App() {
       {/* Footer */}
       <footer className="border-t border-gray-200">
         <div className="container mx-auto px-4 py-6">
-          <p className="text-center text-gray-500 text-sm">
-            OpenSearch - Powered by AI and Open Source Technology
-          </p>
+          <div className="text-center">
+            <p className="text-gray-500 text-sm mb-2">
+              OpenResearch.ai - Advanced AI-powered research assistant
+            </p>
+            <a
+              href="https://github.com/Justmalhar/OpenResearch"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-gray-500 hover:text-[#1877F2] transition-colors"
+            >
+              <Github className="w-4 h-4" />
+              <span className="text-sm">View on GitHub</span>
+            </a>
+          </div>
         </div>
       </footer>
     </div>
