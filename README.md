@@ -1,6 +1,6 @@
 # OpenResearch
 
-![Demo Image](https://github.com/Justmalhar/OpenResearch/raw/main/public/demo.jpg)
+![Demo Image](https://github.com/Justmalhar/OpenResearch/raw/main/demo.jpg)
 
 Check out the live website: Open-Research.ai
 
