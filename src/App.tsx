@@ -6,6 +6,7 @@ import { SourceSelector } from "./components/SourceSelector";
 import { SearchResults } from "./components/SearchResults";
 import { AIResponse } from "./components/AIResponse";
 import { Globe, Github } from "lucide-react";
+import { Analytics } from "@vercel/analytics/react";
 
 export function App() {
   const [query, setQuery] = useState("");
@@ -51,6 +52,7 @@ export function App() {
             <h1 className="text-4xl font-bold text-[#1877F2]">
               OpenResearch.ai
             </h1>
+            <Analytics />
           </div>
 
           {/* Search Bar */}
