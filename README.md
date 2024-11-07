@@ -16,6 +16,12 @@ Open-Research.ai is an advanced search engine built with OpenAI API and Serper.d
   - Scholar
   - Patents
 
+  ## Deploy on Vercel
+
+  The easiest way to deploy Open-Research.ai is to use the [Vercel Platform](https://vercel.com/new) for instant deployment.
+
+  [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/justmalhar/OpenResearch&env=VITE_OPENAI_API_KEY&env=VITE_SERPER_API_KEY)
+
 - **Modern Tech Stack**:
   - React 18 with TypeScript
   - Vite for blazing fast builds
