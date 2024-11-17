@@ -1,7 +1,7 @@
 import { SearchSource, SearchResult } from '../types';
 
 const SERPER_API_KEY = import.meta.env.VITE_SERPER_API_KEY;
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 
 export async function searchSerper(query: string, source: SearchSource): Promise<SearchResult[]> {
   const endpoint = `https://google.serper.dev/${source}`;
