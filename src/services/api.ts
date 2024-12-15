@@ -1,7 +1,7 @@
 import { SearchSource, SearchResult } from '../types';
 
 const SERPER_API_KEY = import.meta.env.VITE_SERPER_API_KEY;
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
 export async function searchSerper(query: string, source: SearchSource): Promise<SearchResult[]> {
   const endpoint = `https://google.serper.dev/${source}`;
@@ -97,14 +97,14 @@ Follow this structure:
 
 ${prompts[source]}`;
 
-  const response = await fetch('https://openrouter.ai/api/v1', {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+      'Authorization': `Bearer ${OPENAI_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'google/gemini-2.0-flash-exp:free',
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
