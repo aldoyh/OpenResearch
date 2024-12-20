@@ -76,7 +76,7 @@ export function App() {
               <ThemeToggle />
               <LanguageToggle />
             </div>
-            <h1 className="text-4xl font-bold text-[#1877F2] dark:text-blue-400 text-right">
+            <h1 className="text-4xl font-bold text-[#1877F2] dark:text-blue-400 text-right mb-4">
               {translations[language].title}
             </h1>
             <Analytics />
@@ -145,9 +145,18 @@ export function App() {
 
       {/* Footer */}
       <footer className="border-t border-gray-200 dark:border-dark-surface absolute inset-x-0 bottom-5">
-        <div className="container mx-auto px-4 py-6 text-center">
-          <p className="text-gray-500 dark:text-dark-text">
+        <div className="container mx-auto px-4 py-6 text-center text-sm">
+          <p className="text-gray-500 dark:text-dark-text text-md">
             {translations[language].footer} {new Date().getFullYear()}
+          </p>
+          <p className="text-gray-500 dark:text-dark-text">
+            تمت الترجمة بكل حب ♥️ من البحرين 🇧🇭 | بواسطة: <a href="https://github.com/aldoyh" className="text-[#1877F2] dark:text-blue-400">aldoyh</a>
+          </p>
+          <p className="text-gray-500 dark:text-dark-text">
+            جميع الحقوق مفتوحة المصدر ومرخصة بموجب رخصة MIT | وبجهود المطور <a href="https://github.com/Justmalhar/OpenResearch" target="_blank" rel="noopener noreferrer" className="text-[#1877F2] dark:text-blue-400">Justmalhar</a>
+          </p>
+          <p className="text-gray-500 dark:text-dark-text letter-spacing-8">
+            OPENRESEARCH.AI
           </p>
         </div>
       </footer>
