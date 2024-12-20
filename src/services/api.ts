@@ -14,8 +14,8 @@ export async function searchSerper(query: string, source: SearchSource): Promise
     },
     body: JSON.stringify({
       q: query,
-      gl: 'us',
-      hl: 'en',
+      gl: 'world',
+      hl: 'ar',
     }),
   });
 
