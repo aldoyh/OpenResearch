@@ -2,6 +2,7 @@ import { SearchSource, SearchResult } from '../types';
 
 const SERPER_API_KEY = import.meta.env.VITE_SERPER_API_KEY;
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+const XAI_API_KEY = import.meta.env.VITE_XAI_API_KEY;
 
 export async function searchSerper(query: string, source: SearchSource): Promise<SearchResult[]> {
   const endpoint = `https://google.serper.dev/${source}`;
@@ -25,6 +26,29 @@ export async function searchSerper(query: string, source: SearchSource): Promise
 
   const data = await response.json();
   return formatResults(data, source);
+}
+
+export async function generateXAIResponse(query: string, results: SearchResult[], source: SearchSource): Promise<string> {
+  const response = await fetch('https://api.x.ai/v1', {
+    method: 'POST',
+    headers: {
+      'X-API-KEY': XAI_API_KEY,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'grok-2-1212',
+      query,
+      results,
+      source,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('فشل في إنشاء استجابة الذكاء الاصطناعي' + response.statusText);
+  }
+
+  const data = await response.json();
+  return data.response;
 }
 
 export async function generateAIResponse(query: string, results: SearchResult[], source: SearchSource): Promise<string> {
