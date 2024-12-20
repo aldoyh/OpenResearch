@@ -69,6 +69,17 @@ export default {
       textDirection: {
         rtl: 'rtl',
       },
+      fontFamily: {
+        tajawal: ['Tajawal', 'sans-serif'],
+      },
+      colors: {
+        dark: {
+          bg: '#1a1b1e',
+          surface: '#25262b',
+          text: '#e4e5e7',
+          border: '#2c2e33'
+        }
+      }
     },
   },
   plugins: [

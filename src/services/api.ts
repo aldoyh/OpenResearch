@@ -14,13 +14,13 @@ export async function searchSerper(query: string, source: SearchSource): Promise
     },
     body: JSON.stringify({
       q: query,
-      gl: 'us',
-      hl: 'en',
+      gl: 'world',
+      hl: 'ar',
     }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch search results');
+    throw new Error('فشل في جلب نتائج البحث');
   }
 
   const data = await response.json();
@@ -29,71 +29,71 @@ export async function searchSerper(query: string, source: SearchSource): Promise
 
 export async function generateAIResponse(query: string, results: SearchResult[], source: SearchSource): Promise<string> {
   const prompts = {
-    search: `Create a comprehensive markdown summary with:
-      ## Summary
-      ### Key Findings
-      ### Sources
-      ### Conclusion`,
+    search: `إنشاء ملخص شامل بتنسيق markdown يتضمن:
+      ## الملخص
+      ### النتائج الرئيسية
+      ### المصادر
+      ### الخاتمة`,
 
-    images: `Analyze the image collection and create a markdown summary with:
-      ## Visual Analysis
-      ### Common Themes
-      ### Notable Elements
-      ### Technical Details (resolution, style, etc)`,
+    images: `تحليل مجموعة الصور وإنشاء ملخص بتنسيق markdown يتضمن:
+      ## تحليل بصري
+      ### المواضيع المشتركة
+      ### العناصر البارزة
+      ### التفاصيل التقنية (الدقة، النمط، إلخ)`,
 
-    videos: `Analyze the video collection and create a markdown summary with:
-      ## Content Overview
-      ### Popular Channels
-      ### Duration Analysis
-      ### View Count Statistics
-      ### Key Topics`,
+    videos: `تحليل مجموعة الفيديوهات وإنشاء ملخص بتنسيق markdown يتضمن:
+      ## نظرة عامة على المحتوى
+      ### القنوات الشائعة
+      ### تحليل المدة
+      ### إحصائيات المشاهدات
+      ### المواضيع الرئيسية`,
 
-    news: `Create a news analysis in markdown with:
-      ## News Summary
-      ### Main Story
-      ### Related Developments
-      ### Sources
-      ### Timeline`,
+    news: `إنشاء تحليل إخباري بتنسيق markdown يتضمن:
+      ## ملخص الأخبار
+      ### القصة الرئيسية
+      ### التطورات ذات الصلة
+      ### المصادر
+      ### الجدول الزمني`,
 
-    shopping: `Create a product analysis in markdown with:
-      ## Market Overview
-      ### Price Range Analysis
-      ### Popular Brands
-      ### Key Features
-      ### Best Value Options`,
+    shopping: `إنشاء تحليل للمنتجات بتنسيق markdown يتضمن:
+      ## نظرة عامة على السوق
+      ### تحليل نطاق الأسعار
+      ### العلامات التجارية الشائعة
+      ### الميزات الرئيسية
+      ### أفضل الخيارات قيمةً`,
 
-    scholar: `Create an academic summary in markdown with:
-      ## Research Overview
-      ### Key Findings
-      ### Methodology Patterns
-      ### Research Impact
-      ### Future Directions`,
+    scholar: `إنشاء ملخص أكاديمي بتنسيق markdown يتضمن:
+      ## نظرة عامة على البحث
+      ### النتائج الرئيسية
+      ### أنماط المنهجية
+      ### تأثير البحث
+      ### التوجهات المستقبلية`,
 
-    patents: `Create a patent analysis in markdown with:
-      ## Innovation Overview
-      ### Key Technologies
-      ### Patent Holders
-      ### Application Areas
-      ### Market Impact`,
+    patents: `إنشاء تحليل للبراءات بتنسيق markdown يتضمن:
+      ## نظرة عامة على الابتكار
+      ### التقنيات الرئيسية
+      ### أصحاب البراءات
+      ### مجالات التطبيق
+      ### التأثير في السوق`,
 
-    places: `Create a location analysis in markdown with:
-      ## Area Overview
-      ### Popular Venues
-      ### Ratings Analysis
-      ### Location Highlights
-      ### Visitor Tips`
+    places: `إنشاء تحليل للموقع بتنسيق markdown يتضمن:
+      ## نظرة عامة على المنطقة
+      ### الأماكن الشائعة
+      ### تحليل التقييمات
+      ### مميزات الموقع
+      ### نصائح للزوار`
   };
 
-  const systemPrompt = `You are an expert research assistant that creates well-formatted markdown summaries. Format with proper markdown:
-    - **Bold** for emphasis
-    - *Italic* for terminology
-    - > Blockquotes for important quotes
-    - \`code\` for technical terms
-    - Lists (- or 1.) for multiple points
-    Include relevant statistics and cite sources using [text](url) format.`;
+  const systemPrompt = `أنت مساعد بحث خبير يقوم بإنشاء ملخصات منسقة بـ markdown. التنسيق يشمل:
+    - **غامق** للتأكيد
+    - *مائل* للمصطلحات
+    - > اقتباسات للنصوص المهمة
+    - \`كود\` للمصطلحات التقنية
+    - قوائم (- أو 1.) للنقاط المتعددة
+    قم بتضمين الإحصائيات ذات الصلة واستشهد بالمصادر باستخدام تنسيق [النص](الرابط)`;
 
-  const userPrompt = `Create a ${source} analysis for "${query}" using these results: ${JSON.stringify(results)}.
-Follow this structure:
+  const userPrompt = `إنشاء تحليل ${source} لـ "${query}" باستخدام هذه النتائج: ${JSON.stringify(results)}.
+اتبع هذا الهيكل:
 
 ${prompts[source]}`;
 
@@ -115,7 +115,7 @@ ${prompts[source]}`;
   });
 
   if (!response.ok) {
-    throw new Error('Failed to generate AI response');
+    throw new Error('فشل في إنشاء استجابة الذكاء الاصطناعي');
   }
 
   const data = await response.json();
