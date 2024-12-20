@@ -1,6 +1,7 @@
 # Open-Research.ai
-
+<div style="width: 100%; text-align: left; font-size: .8em">
 English: [README.md](README.md)
+</div>
 
 ### محرك بحث مدعوم بالذكاء الاصطناعي
 
@@ -93,4 +94,15 @@ VITE_SERPER_API_KEY=your_serper_api_key
 > انطلق معنا في رحلة استكشاف آفاق جديدة مع Open-Research.ai، حيث نعيد تشكيل مستقبل البحث العلمي ونفتح أبواباً لا حصر لها من المعرفة. كن جزءاً من هذه الثورة التقنية واستمتع بتجربة بحث استثنائية مدعومة بأحدث تقنيات الذكاء الاصطناعي. معاً نصنع مستقبلاً أكثر ذكاءً وإبداعاً! 🚀✨
 
 ---
-ترجمة وتعريب: [@aldoyh](https://github.com/aldoyh)
+
+* ترجمة وتعريب  **: [@aldoyh](https://github.com/aldoyh)
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+  body, .markdown-body {
+    font-family: 'Tajawal', sans-serif;
+    direction: rtl;
+    text-align: right;
+  }
+</style>
