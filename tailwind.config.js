@@ -66,6 +66,9 @@ export default {
           },
         },
       },
+      textDirection: {
+        rtl: 'rtl',
+      },
     },
   },
   plugins: [

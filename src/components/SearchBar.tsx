@@ -21,8 +21,9 @@ export function SearchBar({ query, onQueryChange, onSearch, isLoading }: SearchB
           type="text"
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="What would you like to know?"
-          className="w-full px-6 py-4 text-lg rounded-full border border-gray-300 focus:border-[#1877F2] focus:ring-2 focus:ring-[#1877F2]/20 transition-all pr-14 bg-white shadow-sm hover:shadow-md"
+          placeholder="ماذا تريد أن تبحث عنه؟"
+          className="w-full px-6 py-4 text-lg rounded-full border border-gray-300 focus:border-[#1877F2] focus:ring-2 focus:ring-[#1877F2]/20 transition-all pr-14 bg-white shadow-sm hover:shadow-md text-right"
+          dir="rtl"
           disabled={isLoading}
         />
         <button

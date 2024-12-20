@@ -5,7 +5,7 @@ const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
 export async function searchSerper(query: string, source: SearchSource): Promise<SearchResult[]> {
   const endpoint = `https://google.serper.dev/${source}`;
-  
+
   const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -34,48 +34,48 @@ export async function generateAIResponse(query: string, results: SearchResult[],
       ### Key Findings
       ### Sources
       ### Conclusion`,
-    
+
     images: `Analyze the image collection and create a markdown summary with:
       ## Visual Analysis
       ### Common Themes
       ### Notable Elements
       ### Technical Details (resolution, style, etc)`,
-    
+
     videos: `Analyze the video collection and create a markdown summary with:
       ## Content Overview
       ### Popular Channels
       ### Duration Analysis
       ### View Count Statistics
       ### Key Topics`,
-    
+
     news: `Create a news analysis in markdown with:
       ## News Summary
       ### Main Story
       ### Related Developments
       ### Sources
       ### Timeline`,
-    
+
     shopping: `Create a product analysis in markdown with:
       ## Market Overview
       ### Price Range Analysis
       ### Popular Brands
       ### Key Features
       ### Best Value Options`,
-    
+
     scholar: `Create an academic summary in markdown with:
       ## Research Overview
       ### Key Findings
       ### Methodology Patterns
       ### Research Impact
       ### Future Directions`,
-    
+
     patents: `Create a patent analysis in markdown with:
       ## Innovation Overview
       ### Key Technologies
       ### Patent Holders
       ### Application Areas
       ### Market Impact`,
-    
+
     places: `Create a location analysis in markdown with:
       ## Area Overview
       ### Popular Venues
@@ -92,7 +92,7 @@ export async function generateAIResponse(query: string, results: SearchResult[],
     - Lists (- or 1.) for multiple points
     Include relevant statistics and cite sources using [text](url) format.`;
 
-  const userPrompt = `Create a ${source} analysis for "${query}" using these results: ${JSON.stringify(results)}. 
+  const userPrompt = `Create a ${source} analysis for "${query}" using these results: ${JSON.stringify(results)}.
 Follow this structure:
 
 ${prompts[source]}`;
