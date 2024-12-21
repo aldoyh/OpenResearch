@@ -1,6 +1,6 @@
 # Open-Research.ai
 
-English: [README.md](README.md)
+English: [README.md](README.md) 🇬🇧
 
 ### محرك بحث مدعوم بالذكاء الاصطناعي
 
