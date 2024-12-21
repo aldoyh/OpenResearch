@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SearchSource, SearchResult } from "./types";
 import { searchSerper, generateAIResponse } from "./services/api";
 import { SearchBar } from "./components/SearchBar";
@@ -19,6 +19,16 @@ export function App() {
   const [aiResponse, setAIResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    console.log("Language:", language);
+    console.log("Query:", query);
+    console.log("Source:", source);
+    console.log("Results:", results);
+    console.log("AI Response:", aiResponse);
+    console.log("Loading:", loading);
+    console.log("Error:", error);
+  }, [language, query, source, results, aiResponse, loading, error]);
 
   const translations = {
     ar: {
@@ -64,7 +74,7 @@ export function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#F0F2F5] to-white dark:from-dark-bg dark:to-dark-surface" dir="rtl">
+    <div className={`flex flex-col min-h-screen bg-gradient-to-b from-[#F0F2F5] to-white dark:from-dark-bg dark:to-dark-surface ${language === 'ar' ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <header className="bg-white dark:bg-dark-surface shadow-sm">
         <div className="container mx-auto px-4 py-6">
