@@ -1,31 +1,62 @@
 import { SearchSource, SearchResult } from '../types';
+import Configuration from 'openai';
+import { OpenAI } from 'openai';
 
 const SERPER_API_KEY = import.meta.env.VITE_SERPER_API_KEY;
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const XAI_API_KEY = import.meta.env.VITE_XAI_API_KEY;
 
-export async function searchSerper(query: string, source: SearchSource): Promise<SearchResult[]> {
-  const endpoint = `https://google.serper.dev/${source}`;
+const configuration = new Configuration({
+  apiKey: OPENAI_API_KEY,
+});
+const openai = new OpenAI();
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'X-API-KEY': SERPER_API_KEY,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      q: query,
-      gl: 'world',
-      hl: 'ar',
-    }),
-  });
+interface APIError {
+  message: string;
+  code: string;
+}
 
-  if (!response.ok) {
-    throw new Error('فشل في جلب نتائج البحث');
+// Add retry logic and better error handling
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<Response> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (response.ok) return response;
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+    }
   }
+  throw new Error('All retry attempts failed');
+}
 
-  const data = await response.json();
-  return formatResults(data, source);
+export async function searchSerper(query: string, source: SearchSource): Promise<SearchResult[]> {
+  try {
+    const endpoint = `https://google.serper.dev/${source}`;
+    const response = await fetchWithRetry(endpoint, {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': SERPER_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        q: query,
+        gl: 'world',
+        hl: 'ar',
+        num: 10, // Limit results
+      }),
+    });
+
+    const data = await response.json();
+    if ('error' in data) {
+      throw new Error(`API Error: ${(data as APIError).message}`);
+    }
+
+    return formatResults(data, source);
+  } catch (error) {
+    console.error('Search error:', error);
+    throw new Error('فشل في جلب نتائج البحث - يرجى المحاولة مرة أخرى');
+  }
 }
 
 export async function generateXAIResponse(query: string, results: SearchResult[], source: SearchSource): Promise<string> {
@@ -52,107 +83,96 @@ export async function generateXAIResponse(query: string, results: SearchResult[]
 }
 
 export async function generateAIResponse(query: string, results: SearchResult[], source: SearchSource): Promise<string> {
-  const prompts = {
-    search: `إنشاء ملخص شامل بتنسيق markdown يتضمن:
-      ## الملخص
-      ### النتائج الرئيسية
-      ### المصادر
-      ### الخاتمة`,
-
-    images: `تحليل مجموعة الصور وإنشاء ملخص بتنسيق markdown يتضمن:
-      ## تحليل بصري
-      ### المواضيع المشتركة
-      ### العناصر البارزة
-      ### التفاصيل التقنية (الدقة، النمط، إلخ)`,
-
-    videos: `تحليل مجموعة الفيديوهات وإنشاء ملخص بتنسيق markdown يتضمن:
-      ## نظرة عامة على المحتوى
-      ### القنوات الشائعة
-      ### تحليل المدة
-      ### إحصائيات المشاهدات
-      ### المواضيع الرئيسية`,
-
-    news: `إنشاء تحليل إخباري بتنسيق markdown يتضمن:
-      ## ملخص الأخبار
-      ### القصة الرئيسية
-      ### التطورات ذات الصلة
-      ### المصادر
-      ### الجدول الزمني`,
-
-    shopping: `إنشاء تحليل للمنتجات بتنسيق markdown يتضمن:
-      ## نظرة عامة على السوق
-      ### تحليل نطاق الأسعار
-      ### العلامات التجارية الشائعة
-      ### الميزات الرئيسية
-      ### أفضل الخيارات قيمةً`,
-
-    scholar: `إنشاء ملخص أكاديمي بتنسيق markdown يتضمن:
-      ## نظرة عامة على البحث
-      ### النتائج الرئيسية
-      ### أنماط المنهجية
-      ### تأثير البحث
-      ### التوجهات المستقبلية`,
-
-    patents: `إنشاء تحليل للبراءات بتنسيق markdown يتضمن:
-      ## نظرة عامة على الابتكار
-      ### التقنيات الرئيسية
-      ### أصحاب البراءات
-      ### مجالات التطبيق
-      ### التأثير في السوق`,
-
-    places: `إنشاء تحليل للموقع بتنسيق markdown يتضمن:
-      ## نظرة عامة على المنطقة
-      ### الأماكن الشائعة
-      ### تحليل التقييمات
-      ### مميزات الموقع
-      ### نصائح للزوار`
-  };
-
-  const systemPrompt = `أنت مساعد بحث خبير يقوم بإنشاء ملخصات منسقة بـ markdown. التنسيق يشمل:
-    - **غامق** للتأكيد
-    - *مائل* للمصطلحات
-    - > اقتباسات للنصوص المهمة
-    - \`كود\` للمصطلحات التقنية
-    - قوائم (- أو 1.) للنقاط المتعددة
-    قم بتضمين الإحصائيات ذات الصلة واستشهد بالمصادر باستخدام تنسيق [النص](الرابط)`;
-
-  const userPrompt = `إنشاء تحليل ${source} لـ "${query}" باستخدام هذه النتائج: ${JSON.stringify(results)}.
-اتبع هذا الهيكل:
-
-${prompts[source]}
-
-${systemPrompt}`;
-
-  // Get the active AI provider
-  const { provider, model } = await getAIProvider();
-  
-  console.log(`[AI] Using ${provider} with model ${model}`);
-
   try {
-    if (provider === 'ollama') {
-      return await callOllamaAPI(userPrompt, model);
-    } else {
-      return await callGroqAPI(userPrompt, model);
+    const systemPrompt = `أنت مساعد بحث خبير يقوم بإنشاء ملخصات منسقة بـ markdown. التنسيق يشمل:
+      - **غامق** للتأكيد
+      - *مائل* للمصطلحات
+      - > اقتباسات للنصوص المهمة
+      - \`كود\` للمصطلحات التقنية
+      - قوائم (- أو 1.) للنقاط المتعددة`;
+
+    const enhancedPrompts: { [key in SearchSource]: string } = {
+      search: `تحليل شامل باللغة العربية يتضمن:
+        ## نظرة عامة
+        ### النقاط الرئيسية
+        ### تحليل النتائج
+        ### المصادر والموثوقية
+        ### الخلاصة والتوصيات`,
+      images: `تحليل شامل للصور باللغة العربية يتضمن:
+        ## نظرة عامة
+        ### النقاط الرئيسية
+        ### تحليل النتائج
+        ### المصادر والموثوقية
+        ### الخلاصة والتوصيات`,
+      videos: `تحليل شامل للفيديوهات باللغة العربية يتضمن:
+        ## نظرة عامة
+        ### النقاط الرئيسية
+        ### تحليل النتائج
+        ### المصادر والموثوقية
+        ### الخلاصة والتوصيات`,
+      places: `تحليل شامل للأماكن باللغة العربية يتضمن:
+        ## نظرة عامة
+        ### النقاط الرئيسية
+        ### تحليل النتائج
+        ### المصادر والموثوقية
+        ### الخلاصة والتوصيات`,
+      news: `تحليل شامل للأخبار باللغة العربية يتضمن:
+        ## نظرة عامة
+        ### النقاط الرئيسية
+        ### تحليل النتائج
+        ### المصادر والموثوقية
+        ### الخلاصة والتوصيات`,
+      shopping: `تحليل شامل للتسوق باللغة العربية يتضمن:
+        ## نظرة عامة
+        ### النقاط الرئيسية
+        ### تحليل النتائج
+        ### المصادر والموثوقية
+        ### الخلاصة والتوصيات`,
+      scholar: `تحليل شامل للأبحاث العلمية باللغة العربية يتضمن:
+        ## نظرة عامة
+        ### النقاط الرئيسية
+        ### تحليل النتائج
+        ### المصادر والموثوقية
+        ### الخلاصة والتوصيات`,
+      patents: `تحليل شامل للبراءات باللغة العربية يتضمن:
+        ## نظرة عامة
+        ### النقاط الرئيسية
+        ### تحليل النتائج
+        ### المصادر والموثوقية
+        ### الخلاصة والتوصيات`,
+    };
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4-turbo-preview", // Use latest model
+      messages: [
+        {
+          role: 'system',
+          content: `${systemPrompt}\nقم بتقديم تحليل عميق وشامل باللغة العربية مع التركيز على الدقة والموضوعية.`
+        },
+        {
+          role: 'user',
+          content: `تحليل "${query}" (${source}):\n${JSON.stringify(results)}\n\nالهيكل المطلوب:\n${enhancedPrompts[source]}`
+        }
+      ],
+      max_tokens: 4000,
+      temperature: 0.7,
+      presence_penalty: 0.3,
+      frequency_penalty: 0.3,
+    });
+
+    if (!response.choices || response.choices.length === 0) {
+      throw new Error('فشل في إنشاء استجابة الذكاء الاصطناعي');
     }
+
+    const data = response;
+    const content = data.choices[0].message.content;
+    if (content === null) {
+      throw new Error('AI response content is null');
+    }
+    return content;
   } catch (error) {
-    console.error(`[AI] ${provider} failed, attempting fallback...`, error);
-    
-    // If primary provider fails, try the other one
-    if (provider === 'ollama') {
-      console.log('[AI] Falling back to Groq');
-      const groqModel = localStorage.getItem(STORAGE_KEYS.GROQ_MODEL) || DEFAULT_GROQ_MODEL;
-      return await callGroqAPI(userPrompt, groqModel);
-    } else {
-      // If Groq fails, check if Ollama is available
-      const ollamaAvailable = await checkOllamaAvailability();
-      if (ollamaAvailable) {
-        console.log('[AI] Falling back to Ollama');
-        const models = await fetchOllamaModels();
-        const ollamaModel = models[0] || DEFAULT_OLLAMA_MODEL;
-        return await callOllamaAPI(userPrompt, ollamaModel);
-      }
-      throw error; // No fallback available
-    }
+    console.error('AI response error:', error);
+    throw new Error('فشل في إنشاء تحليل الذكاء الاصطناعي - يرجى المحاولة مرة أخرى');
   }
 }
 
