@@ -78,7 +78,7 @@ export default {
         rtl: 'rtl',
       },
       fontFamily: {
-        tajawal: ['Tajawal', 'sans-serif'],
+        tajawal: ['Tajawal', 'system-ui', 'sans-serif'],
       },
       colors: {
         dark: {

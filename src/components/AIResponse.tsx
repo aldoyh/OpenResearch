@@ -7,7 +7,7 @@ interface AIResponseProps {
 export function AIResponse({ response }: AIResponseProps) {
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm mb-8">
-      <h2 className="text-xl font-semibold text-[#1877F2] mb-4">Results</h2>
+      <h2 className="text-xl font-semibold text-[#1877F2] mb-4">النتائج بتقرير الذص Grok2</h2>
       <div className="prose prose-blue max-w-none">
         <ReactMarkdown
           components={{
@@ -51,16 +51,15 @@ export function AIResponse({ response }: AIResponseProps) {
               </blockquote>
             ),
             // Style code blocks
-            code: ({ children, ...props }: any) => {
-              const inline = !props.className;
-              return inline ? 
-                <code className="bg-gray-100 rounded px-1 py-0.5 text-sm font-mono">
+            code: ({ node, inline, className, children, ...props }: { node: any, inline: boolean, className: string, children: React.ReactNode }) => (
+              inline ?
+                <code className={`bg-gray-100 rounded px-1 py-0.5 text-sm font-mono ${className}`} {...props}>
                   {children}
                 </code> :
                 <pre className="bg-gray-100 rounded-lg p-4 overflow-x-auto">
-                  <code className="text-sm font-mono">{children}</code>
-                </pre>;
-            },
+                  <code className={`text-sm font-mono ${className}`} {...props}>{children}</code>
+                </pre>
+            ),
             // Style headings
             h2: ({ children }) => (
               <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">
@@ -74,9 +73,9 @@ export function AIResponse({ response }: AIResponseProps) {
             ),
             // Style links
             a: ({ href, children }) => (
-              <a 
-                href={href} 
-                target="_blank" 
+              <a
+                href={href}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-[#1877F2] hover:underline"
               >

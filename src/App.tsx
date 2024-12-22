@@ -50,6 +50,7 @@ export function App() {
   };
 
   const handleSourceChange = (newSource: SearchSource) => {
+    console.log("Source changed to:", newSource);
     setSource(newSource);
     setResults([]);
     setAIResponse("");
@@ -59,16 +60,20 @@ export function App() {
   const handleSearch = async () => {
     if (!query.trim()) return;
 
+    console.log("Starting search with query:", query);
     setLoading(true);
     setError("");
 
     try {
       const searchResults = await searchSerper(query, source);
+      console.log("Search results:", searchResults);
       setResults(searchResults);
 
       const response = await generateAIResponse(query, searchResults, source);
+      console.log("AI response:", response);
       setAIResponse(response);
     } catch (err) {
+      console.error("Search error:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
@@ -86,7 +91,7 @@ export function App() {
               <ThemeToggle />
               <LanguageToggle />
             </div>
-            <h1 className="text-4xl font-bold text-[#1877F2] dark:text-blue-400 text-right mb-4">
+            <h1 className="text-4xl font-bold text-[#1877F2] dark:text-blue-400 text-right mb-4 font-tajawal">
               {translations[language].title}
             </h1>
             <Analytics />
@@ -154,7 +159,7 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 dark:border-dark-surface absolute inset-x-0 bottom-5">
+      <footer className="absolute border-t border-gray-200 dark:border-dark-surface inset-x-0 bottom-5">
         <div className="container mx-auto px-4 py-6 text-center text-sm">
           <p className="text-gray-500 dark:text-dark-text text-md">
             {translations[language].footer} {new Date().getFullYear()}
