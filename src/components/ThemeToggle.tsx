@@ -8,7 +8,7 @@ export function ThemeToggle() {
     <button
       onClick={toggleDarkMode}
       className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-dark-surface transition-colors"
-      title={language === 'ar' ? 'تبديل المظهر' : 'Toggle theme'}
+      title={language === 'ar' ? 'الوضع الليلي' : 'Toggle theme'}
     >
       {isDarkMode ? (
         <Sun className="w-5 h-5 text-yellow-500" />
