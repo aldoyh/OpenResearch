@@ -7,7 +7,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleDarkMode}
-      className="p-2.5 rounded-full hover:bg-gray-100 dark:hover:bg-dark-surface transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+      className="p-2.5 rounded-full hover:bg-gray-100 dark:hover:bg-dark-surface transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400"
       title={language === 'ar' ? 'تبديل المظهر' : 'Toggle theme'}
       aria-label={language === 'ar' ? 'تبديل المظهر' : 'Toggle theme'}
     >

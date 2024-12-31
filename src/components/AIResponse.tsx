@@ -52,7 +52,7 @@ export function AIResponse({ response }: AIResponseProps) {
               </blockquote>
             ),
             // Style code blocks
-            code: ({ node, inline, className, children, ...props }: { node: any, inline: boolean, className: string, children: React.ReactNode }) => (
+            code: ({ inline, className, children, ...props }: { inline?: boolean, className?: string, children?: React.ReactNode }) => (
               inline ?
                 <code className={`bg-gray-100 rounded px-1 py-0.5 text-sm font-mono ${className}`} {...props}>
                   {children}

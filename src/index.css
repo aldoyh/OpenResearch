@@ -8,4 +8,10 @@
   html {
     font-family: 'Tajawal', system-ui, sans-serif;
   }
+  .openresearch-header {
+    background-image: url('images/openresearch-ai-logo-2024-stoned.png');
+    background-size: 20%;
+    background-repeat: no-repeat;
+    background-position: 10% 90%;
+  }
 }

@@ -1,99 +1,114 @@
-# OpenResearch
+# Open-Research.ai
+<div style="width: 100%; text-align: left; font-size: .8em">
+English: [README.md](README.md)
+</div>
 
-**Other Languages**:
+### محرك بحث مدعوم بالذكاء الاصطناعي
 
-- [Arabic عربي](README.ar.md) 🇸🇦
+## نظرة عامة
+**OpenResearch** هو محرك بحث مدعوم بالذكاء الاصطناعي يقدم للمستخدمين تجربة بحث شاملة وديناميكية. تم بناؤه باستخدام واجهة برمجة تطبيقات X.ai (Grok2) وSerper.dev، حيث يجمع هذا النظام بين أحدث تقنيات الذكاء الاصطناعي ومميزات البحث القوية عبر أنواع متعددة من المحتوى. مع واجهة حديثة وسهلة الاستخدام، يمكن للمستخدمين الوصول بسهولة واستكشاف مجموعة واسعة من المعلومات من منصة واحدة.
 
-![Demo Image](https://github.com/Justmalhar/OpenResearch/raw/main/demo.jpg)
+<div style="text-align: center">
+![صورة أولى](ReadMe_Assets/Screenshots.ar-01.jpeg) ![صورة ثانية](ReadMe_Assets/Screenshots.ar-02.jpeg)
+</div>
 
-Check out the live website: Open-Research.ai
+## المميزات الرئيسية
+- **بحث متعدد الوسائط**: بحث سلس عبر فئات محتوى متنوعة، مما يوفر تجربة مستخدم ثرية لاسترجاع المعلومات:
+  - **البحث في الويب**: استكشف الويب بقدرات بحث واسعة وفعالة.
+  - **الصور**: العثور على المحتوى المرئي المتعلق باستعلامات البحث.
+  - **الفيديوهات**: البحث واكتشاف محتوى الفيديو من المنصات الشهيرة.
+  - **الأخبار**: احصل على أحدث العناوين والمقالات.
+  - **الأماكن**: اكتشف المعلومات المحلية والرؤى الجغرافية.
+  - **التسوق**: قارن معلومات المنتجات والأسعار عبر كبرى متاجر التجزئة.
+  - **الباحث العلمي**: الوصول إلى المقالات العلمية والأوراق البحثية والمحتوى الأكاديمي.
+  - **براءات الاختراع**: البحث في قواعد بيانات براءات الاختراع عن الابتكارات والملكية الفكرية.
 
-### AI-Powered Search Engine
+- **مجموعة التقنيات الحديثة**: تم بناؤه بأحدث الأدوات لتقديم أداء مثالي وتجربة مطور متميزة:
+  - **React 18** مع TypeScript لواجهة أمامية قوية وقابلة للصيانة.
+  - **Vite** للبناء فائق السرعة واستبدال الوحدات الساخن (HMR).
+  - **TailwindCSS** لتصميم واجهة مستخدم حديثة وقابلة للتخصيص بدرجة عالية.
+  - **ESLint** للحفاظ على جودة الكود واتساقه.
 
-## Overview
-**OpenResearch** is a AI-driven search engine that offers users a comprehensive and dynamic search experience. Built on top of the X.ai API (Grok2) and Serper.dev API, this platform combines the latest AI technologies with powerful search features across multiple content types. With its modern, intuitive interface, users can easily access and explore a wide array of information from a single platform.
+## النشر السريع على Vercel
+نشر **Open-Research.ai** بسيط وسريع مع خيار النشر بنقرة واحدة من Vercel. يوفر Vercel بيئة قوية وقابلة للتطوير لمشروعك.
 
-## Key Features
-- **Multi-Modal Search**: Seamlessly search across diverse content categories, providing an enriched user experience for information retrieval:
-  - **Web Search**: Explore the web with a broad and efficient search capability.
-  - **Images**: Find visual content relevant to your search queries.
-  - **Videos**: Search and discover video content from popular platforms.
-  - **News**: Get the latest headlines and articles.
-  - **Places**: Discover local information and geographical insights.
-  - **Shopping**: Compare product information and prices across major retailers.
-  - **Scholar**: Access scholarly articles, research papers, and academic content.
-  - **Patents**: Search patent databases for inventions and intellectual property.
+[![نشر مع Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/justmalhar/OpenResearch&env=VITE_XAI_API_KEY&env=VITE_SERPER_API_KEY)
 
-- **Modern Tech Stack**: Built with the latest tools to deliver optimal performance and developer experience:
-  - **React 18** with TypeScript for a powerful, maintainable frontend.
-  - **Vite** for ultra-fast builds and Hot Module Replacement (HMR).
-  - **TailwindCSS** for modern, highly customizable UI styling.
-  - **ESLint** for maintaining consistent, high-quality code.
+## دليل التثبيت
+لتشغيل **Open-Research.ai** محلياً، اتبع هذه الخطوات:
 
-## Quick Deployment on Vercel
-Deploying **Open-Research.ai** is simple and fast with Vercel's one-click deployment option. Vercel provides a powerful and scalable environment for your project.
+### المتطلبات المسبقة
+- **Node.js**: تأكد من تثبيت Node.js.
+- **NPM**: استخدم NPM أو Yarn لإدارة التبعيات.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/justmalhar/OpenResearch&env=VITE_XAI_API_KEY&env=VITE_SERPER_API_KEY)
-
-## Installation Guide
-To run **Open-Research.ai** locally, follow these steps:
-
-### Prerequisites
-- **Node.js**: Ensure you have Node.js installed.
-- **NPM**: Use NPM or Yarn to manage dependencies.
-
-### Installation Steps
+### خطوات التثبيت
 ```bash
-# Clone the repository
+# استنساخ المستودع
 git clone https://github.com/justmalhar/OpenResearch.git
 
-# Navigate into the directory
+# الانتقال إلى المجلد
 cd OpenResearch
 
-# Install dependencies
+# تثبيت التبعيات
 npm install
 
-# Start the development server
+# بدء خادم التطوير
 npm run dev
 ```
 
-### Environment Setup
-Configure your environment variables by creating a `.env` file in the root directory:
+### إعداد البيئة
+قم بتكوين متغيرات البيئة عن طريق إنشاء ملف `.env` في المجلد الرئيسي:
 ```env
 VITE_XAI_API_KEY=your_xai_api_key
 VITE_SERPER_API_KEY=your_serper_api_key
 ```
 
-## Development Commands
-- **`npm run dev`**: Start the development server with hot reloading.
-- **`npm run build`**: Generate a production-ready build.
-- **`npm run preview`**: Preview the production build locally.
-- **`npm run lint`**: Check and fix code issues using ESLint.
+## أوامر التطوير
+- **`npm run dev`**: بدء خادم التطوير مع إعادة التحميل التلقائي.
+- **`npm run build`**: إنشاء نسخة جاهزة للإنتاج.
+- **`npm run preview`**: معاينة نسخة الإنتاج محلياً.
+- **`npm run lint`**: فحص وإصلاح مشاكل الكود باستخدام ESLint.
 
-## Detailed Tech Stack
-| Technology      | Version   | Description                                |
+## تفاصيل المكونات التقنية
+| التقنية         | الإصدار   | الوصف                                     |
 |-----------------|-----------|--------------------------------------------|
-| **React**       | 18.3.1    | Frontend framework for building UIs        |
-| **Vite**        | 5.4.2     | Build tool for fast bundling and HMR       |
-| **TypeScript**  | 5.5.3     | Typed superset of JavaScript               |
-| **TailwindCSS** | 3.4.1     | Utility-first CSS framework                |
-| **Lucide React**| 0.344.0   | Icon library for a consistent UI experience|
-| **React Markdown** | 9.0.1  | Markdown rendering in React apps           |
+| **React**       | 18.3.1    | إطار عمل واجهة المستخدم الأمامية          |
+| **Vite**        | 5.4.2     | أداة بناء للحزم السريع و HMR              |
+| **TypeScript**  | 5.5.3     | لغة برمجة مطورة من JavaScript             |
+| **TailwindCSS** | 3.4.1     | إطار عمل CSS للمرافق                       |
+| **Lucide React**| 0.344.0   | مكتبة أيقونات لتجربة واجهة مستخدم متناسقة |
+| **React Markdown** | 9.0.1  | عرض Markdown في تطبيقات React              |
 
-## Contributing
-We welcome contributions! Whether you're fixing a bug, improving documentation, or adding a new feature, your help is appreciated. To contribute:
-1. **Fork the repository**.
-2. **Create a new branch** for your feature or bug fix.
-3. **Submit a Pull Request** for review.
+## المساهمة
+نرحب بالمساهمات! سواء كنت تصلح خطأً، أو تحسن التوثيق، أو تضيف ميزة جديدة، مساعدتك موضع تقدير. للمساهمة:
 
-For major changes, please open an issue first to discuss what you would like to change.
+1.  **انسخ المستودع**.
+2.  **أنشئ فرعاً جديداً** لميزتك أو إصلاح الخطأ.
+3.  **قدم طلب سحب** للمراجعة.
 
-## License
-This project is licensed under the **MIT License**, which allows for commercial and private use, modification, and distribution. For more details, see the [LICENSE](https://github.com/justmalhar/OpenResearch/blob/main/LICENSE) file.
+للتغييرات الكبيرة، يرجى فتح مشكلة أولاً لمناقشة ما تريد تغييره.
 
-## Stay Connected
-- **Twitter/X**: [@justmalhar](https://twitter.com/justmalhar) 🛠
-- **LinkedIn**: [Malhar](https://linkedin.com/in/justmalhar) 💻
+## الترخيص
+هذا المشروع مرخص تحت **رخصة MIT**، التي تسمح بالاستخدام التجاري والخاص والتعديل والتوزيع. لمزيد من التفاصيل، راجع ملف [الترخيص](https://github.com/justmalhar/OpenResearch/blob/main/LICENSE).
 
-Let's push the boundaries of what search can do with **Open-Research.ai**. Dive into the next generation of AI-enhanced discovery and stay at the forefront of innovation!
+## ابق على تواصل
+- **تويتر/X**: [@justmalhar](https://twitter.com/justmalhar) 🛠
+- **لينكد إن**: [Malhar](https://linkedin.com/in/justmalhar) 💻
 
+> انطلق معنا في رحلة استكشاف آفاق جديدة مع Open-Research.ai، حيث نعيد تشكيل مستقبل البحث العلمي ونفتح أبواباً لا حصر لها من المعرفة. كن جزءاً من هذه الثورة التقنية واستمتع بتجربة بحث استثنائية مدعومة بأحدث تقنيات الذكاء الاصطناعي. معاً نصنع مستقبلاً أكثر ذكاءً وإبداعاً! 🚀✨
+
+---
+- AI-powered search engine for Open-Research.ai
+- AI Rephrasing Feature + Localized to Arabic by*: [@aldoyh](https://github.com/aldoyh)
+
+*ترجمة وتعريب*: [@aldoyh](https://github.com/aldoyh)
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+  body, .markdown-body {
+    font-family: 'Tajawal', sans-serif;
+    direction: rtl;
+    text-align: right;
+  }
+</style>
