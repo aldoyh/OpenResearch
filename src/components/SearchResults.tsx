@@ -167,7 +167,7 @@ export function SearchResults({ results, source }: SearchResultsProps) {
                   </a>
                   <button
                     onClick={() => processAndTranslate(result.link)}
-                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-900"
                   >
                     Translate & Save
                   </button>

@@ -12,6 +12,7 @@ import { LanguageToggle } from './components/LanguageToggle';
 import { AIProviderSettings } from './components/AIProviderSettings';
 import { SavedArticles } from './components/SavedArticles';
 import { useApp } from './contexts/AppContext';
+import { gsap } from 'gsap';
 
 export function App() {
   const { language } = useApp();
@@ -83,17 +84,16 @@ export function App() {
   return (
     <div className={`flex flex-col min-h-screen bg-gradient-to-b from-[#F0F2F5] to-white dark:from-dark-bg dark:to-dark-surface ${language === 'ar' ? 'rtl' : 'ltr'}`}>
       {/* Header */}
-      <header className="bg-white dark:bg-dark-surface shadow-sm">
+      <header className="bg-white dark:bg-dark-surface shadow-sm animate-on-load">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-2">
-              <AIProviderSettings />
+            <h1 className="text-xl font-bold text-[#1877F2] dark:text-blue-400 text-right mb-4 font-tajawal">
+              {translations[language].title}
+            </h1>
+            <div className="flex items-center gap-2 rounded-tl-sm">
               <ThemeToggle />
               <LanguageToggle />
             </div>
-            <h1 className="text-4xl font-bold text-[#1877F2] dark:text-blue-400 text-right mb-4 font-tajawal">
-              {translations[language].title}
-            </h1>
             <Analytics />
           </div>
 
@@ -110,7 +110,7 @@ export function App() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 flex-grow dark:bg-dark-bg dark:text-dark-text">
+      <main className="container mx-auto px-4 py-6 flex-grow dark:bg-dark-bg dark:text-dark-text openresearch-header animate-on-load">
         <div className="max-w-6xl mx-auto">
           {/* Source Selector */}
           <SourceSelector
@@ -159,10 +159,10 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <footer className="absolute border-t border-gray-200 dark:border-dark-surface inset-x-0 bottom-5">
-        <div className="container mx-auto px-4 py-6 text-center text-sm">
-          <p className="text-gray-500 dark:text-dark-text text-md">
-            {translations[language].footer} {new Date().getFullYear()}
+      <footer className="sticky dark:border-dark-surface inset-x-0 bottom-0 bg-slate-950 bg-opacity-90 animate-on-load">
+        <div className="container mx-auto px-4 py-6 text-center text-xs" id="footer-pane">
+          <p className="text-gray-500 dark:text-dark-text text-xs">
+            {translations[language].footer} {new Date().getFullYear() - 1}
           </p>
           <p className="text-gray-500 dark:text-dark-text">
             تمت الترجمة بكل حب ♥️ من البحرين 🇧🇭 | بواسطة: <a href="https://github.com/aldoyh" className="text-[#1877F2] dark:text-blue-400">aldoyh</a>
@@ -183,3 +183,21 @@ export function App() {
     </div>
   );
 }
+/**
+ * Animates all the elements on the page when the page loads
+ *
+ * @param {HTMLElement} element The element to animate
+ */
+function animateOnLoad(element: HTMLElement) {
+  let momTL = gsap.timeline();
+  momTL.add(
+    gsap.fromTo(element, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power1.out' }), "+=0.3"
+  );
+}
+
+// on load animate all the elements
+window.onload = () => {
+  const elements = document.querySelectorAll('.animate-on-load');
+  elements.forEach((element) => animateOnLoad(element as HTMLElement));
+};
+export default App;
