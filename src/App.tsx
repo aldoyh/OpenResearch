@@ -9,13 +9,12 @@ import { Globe } from "lucide-react";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeToggle } from './components/ThemeToggle';
 import { LanguageToggle } from './components/LanguageToggle';
-import { AIProviderSettings } from './components/AIProviderSettings';
-import { SavedArticles } from './components/SavedArticles';
+import { AIProviderSelector } from './components/AIProviderSelector';
 import { useApp } from './contexts/AppContext';
 import { gsap } from 'gsap';
 
 export function App() {
-  const { language } = useApp();
+  const { language, aiProvider, setAIProvider } = useApp();
   const [query, setQuery] = useState("");
   const [source, setSource] = useState<SearchSource>("search");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -70,7 +69,7 @@ export function App() {
       console.log("Search results:", searchResults);
       setResults(searchResults);
 
-      const response = await generateAIResponse(query, searchResults, source);
+      const response = await generateAIResponse(query, searchResults, source, aiProvider);
       console.log("AI response:", response);
       setAIResponse(response);
     } catch (err) {
@@ -90,9 +89,15 @@ export function App() {
             <h1 className="text-xl font-bold text-[#1877F2] dark:text-blue-400 text-right mb-4 font-tajawal">
               {translations[language].title}
             </h1>
-            <div className="flex items-center gap-2 rounded-tl-sm">
-              <ThemeToggle />
-              <LanguageToggle />
+            <div className="flex items-center gap-4">
+              <AIProviderSelector
+                selectedProvider={aiProvider}
+                onProviderChange={setAIProvider}
+              />
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <LanguageToggle />
+              </div>
             </div>
             <Analytics />
           </div>
@@ -183,6 +188,7 @@ export function App() {
     </div>
   );
 }
+
 /**
  * Animates all the elements on the page when the page loads
  *
@@ -200,4 +206,5 @@ window.onload = () => {
   const elements = document.querySelectorAll('.animate-on-load');
   elements.forEach((element) => animateOnLoad(element as HTMLElement));
 };
+
 export default App;

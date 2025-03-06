@@ -2,20 +2,30 @@ import { SearchSource, SearchResult } from '../types';
 import OpenAI from 'openai';
 
 const SERPER_API_KEY = import.meta.env.VITE_SERPER_API_KEY;
-const XAI_API_KEY = import.meta.env.VITE_XAI_API_KEY;
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
-// Initialize OpenAI with X.ai configuration
-const openai = new OpenAI({
-  apiKey: XAI_API_KEY,
-  baseURL: "https://api.x.ai/v1",
+// Initialize OpenAI configurations for different providers
+const ollamaConfig = {
+  apiKey: 'ollama',
+  baseURL: 'http://localhost:11434/api/generate',
   dangerouslyAllowBrowser: true,
   defaultHeaders: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  defaultQuery: undefined,
   timeout: 30000,
-});
+};
+
+const groqConfig = {
+  apiKey: GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/v1',
+  dangerouslyAllowBrowser: true,
+  defaultHeaders: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000,
+};
 
 // Add retry logic and better error handling
 async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<Response> {
@@ -65,16 +75,22 @@ export async function searchSerper(query: string, source: SearchSource): Promise
   }
 }
 
-export async function generateAIResponse(query: string, results: SearchResult[], source: SearchSource): Promise<string> {
-  if (!XAI_API_KEY) {
-    throw new Error('X.ai API key is not configured');
+export async function generateAIResponse(
+  query: string,
+  results: SearchResult[],
+  source: SearchSource,
+  provider: 'ollama' | 'groq'
+): Promise<string> {
+  if (provider === 'groq' && !GROQ_API_KEY) {
+    throw new Error('Groq API key is not configured');
   }
 
-  try {
-    console.log('Connecting to X.ai...');
+  const openai = new OpenAI(provider === 'ollama' ? ollamaConfig : groqConfig);
+  const model = provider === 'ollama' ? 'mistral' : 'mixtral-8x7b-32768';
 
+  try {
     const completion = await openai.chat.completions.create({
-      model: "grok-2-1212",
+      model,
       messages: [
         {
           role: 'system',
@@ -86,22 +102,22 @@ export async function generateAIResponse(query: string, results: SearchResult[],
         }
       ],
       temperature: 0.7,
-      max_tokens: 2000,
-      
+      max_tokens: 7000,
+
     });
 
     if (!completion.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from X.ai');
+      throw new Error('Invalid response from AI provider');
     }
 
     return completion.choices[0].message.content;
   } catch (error: any) {
-    console.error('X.ai API error:', error);
+    console.error(`${provider} API error:`, error);
     if (error.response) {
       console.error('Response status:', error.response.status);
       console.error('Response data:', error.response.data);
     }
-    throw new Error(`فشل في إنشاء تحليل الذكاء الاصطناعي - ${error.message}`);
+    throw new Error(`فشل في إنشاء تحليل الذكاء الاصطناعي بواسطة ${provider} - ${error.message}`);
   }
 }
 

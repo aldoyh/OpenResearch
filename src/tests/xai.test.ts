@@ -1,22 +1,22 @@
 import { describe, it, expect } from 'vitest';
 import OpenAI from 'openai';
 
-const XAI_API_KEY = import.meta.env.VITE_XAI_API_KEY;
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
-describe('X.ai API Connectivity', () => {
-  it('should successfully connect to X.ai API', async () => {
-    expect(XAI_API_KEY).toBeDefined();
-    console.log('Testing X.ai connection with API key:', XAI_API_KEY ? 'Present' : 'Missing');
+describe('Groq API Connectivity', () => {
+  it('should successfully connect to Groq API', async () => {
+    expect(GROQ_API_KEY).toBeDefined();
+    console.log('Testing Groq connection with API key:', GROQ_API_KEY ? 'Present' : 'Missing');
 
     try {
       const openai = new OpenAI({
-        apiKey: XAI_API_KEY,
-        baseURL: "https://api.x.ai/v1",
+        apiKey: GROQ_API_KEY,
+        baseURL: "https://api.groq.com/v1",
         dangerouslyAllowBrowser: true
       });
 
       const completion = await openai.chat.completions.create({
-        model: "grok-2-1212",
+        model: "mixtral-8x7b-32768",
         messages: [
           {
             role: 'system',

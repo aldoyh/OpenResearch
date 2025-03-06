@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { AIProvider } from '../types';
 
 type Language = 'ar' | 'en';
 
@@ -7,6 +8,8 @@ interface AppContextType {
     toggleDarkMode: () => void;
     language: Language;
     toggleLanguage: () => void;
+    aiProvider: AIProvider;
+    setAIProvider: (provider: AIProvider) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -26,6 +29,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return 'ar';
     });
 
+    const [aiProvider, setAIProvider] = useState<AIProvider>(() => {
+        if (typeof window !== 'undefined') {
+            return (localStorage.getItem('aiProvider') as AIProvider) || 'ollama';
+        }
+        return 'ollama';
+    });
+
     useEffect(() => {
         document.documentElement.classList.toggle('dark', isDarkMode);
         localStorage.setItem('darkMode', String(isDarkMode));
@@ -37,11 +47,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('language', language);
     }, [language]);
 
+    useEffect(() => {
+        localStorage.setItem('aiProvider', aiProvider);
+    }, [aiProvider]);
+
     const toggleDarkMode = () => setIsDarkMode(prev => !prev);
     const toggleLanguage = () => setLanguage(prev => prev === 'ar' ? 'en' : 'ar');
 
     return (
-        <AppContext.Provider value={{ isDarkMode, toggleDarkMode, language, toggleLanguage }}>
+        <AppContext.Provider value={{
+            isDarkMode, toggleDarkMode, language, toggleLanguage,
+            aiProvider, setAIProvider
+        }}>
             {children}
         </AppContext.Provider>
     );
