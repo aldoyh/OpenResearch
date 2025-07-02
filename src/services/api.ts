@@ -16,6 +16,17 @@ const ollamaConfig = {
   timeout: 30000,
 };
 
+const ollamaQwen3Config = {
+  apiKey: 'ollama',
+  baseURL: 'http://localhost:11434/api/generate',
+  dangerouslyAllowBrowser: true,
+  defaultHeaders: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000,
+};
+
 const groqConfig = {
   apiKey: GROQ_API_KEY,
   baseURL: 'https://api.groq.com/v1',
@@ -81,44 +92,46 @@ export async function generateAIResponse(
   source: SearchSource,
   provider: 'ollama' | 'groq'
 ): Promise<string> {
-  if (provider === 'groq' && !GROQ_API_KEY) {
-    throw new Error('Groq API key is not configured');
+  const providers = [
+    { name: 'groq', config: groqConfig, model: 'mixtral-8x7b-32768', enabled: !!GROQ_API_KEY },
+    { name: 'ollama', config: ollamaConfig, model: 'mistral', enabled: true },
+    { name: 'ollama_qwen3', config: ollamaQwen3Config, model: 'qwen3', enabled: true }
+  ];
+
+  // Start with the selected provider, then fallback
+  const initialProviderIndex = providers.findIndex(p => p.name === provider);
+  const providerQueue = [...providers.slice(initialProviderIndex), ...providers.slice(0, initialProviderIndex)];
+
+  for (const p of providerQueue) {
+    if (!p.enabled) continue;
+
+    try {
+      const openai = new OpenAI(p.config);
+      const completion = await openai.chat.completions.create({
+        model: p.model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an AI research assistant that provides analysis in Arabic.'
+          },
+          {
+            role: 'user',
+            content: `Query: "${query}" (${source})\nResults: ${JSON.stringify(results)}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 7000,
+      });
+
+      if (completion.choices?.[0]?.message?.content) {
+        return completion.choices[0].message.content;
+      }
+    } catch (error: any) {
+      console.error(`${p.name} API error:`, error.message);
+    }
   }
 
-  const openai = new OpenAI(provider === 'ollama' ? ollamaConfig : groqConfig);
-  const model = provider === 'ollama' ? 'mistral' : 'mixtral-8x7b-32768';
-
-  try {
-    const completion = await openai.chat.completions.create({
-      model,
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an AI research assistant that provides analysis in Arabic.'
-        },
-        {
-          role: 'user',
-          content: `Query: "${query}" (${source})\nResults: ${JSON.stringify(results)}`
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 7000,
-
-    });
-
-    if (!completion.choices?.[0]?.message?.content) {
-      throw new Error('Invalid response from AI provider');
-    }
-
-    return completion.choices[0].message.content;
-  } catch (error: any) {
-    console.error(`${provider} API error:`, error);
-    if (error.response) {
-      console.error('Response status:', error.response.status);
-      console.error('Response data:', error.response.data);
-    }
-    throw new Error(`فشل في إنشاء تحليل الذكاء الاصطناعي بواسطة ${provider} - ${error.message}`);
-  }
+  throw new Error('All AI providers failed to generate a response.');
 }
 
 function formatResults(data: any, source: SearchSource): SearchResult[] {
