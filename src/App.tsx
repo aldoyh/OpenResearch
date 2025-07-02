@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { SearchSource, SearchResult, AIProvider } from "./types";
+import { SearchSource, SearchResult } from "./types";
 import { searchSerper, generateAIResponse } from "./services/api";
 import { SearchBar } from "./components/SearchBar";
 import { SourceSelector } from "./components/SourceSelector";
@@ -11,17 +11,16 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { LanguageToggle } from './components/LanguageToggle';
 import { AIProviderSelector } from './components/AIProviderSelector';
 import { useApp } from './contexts/AppContext';
-import { gsap } from 'gsap';
 
 export function App() {
   const { language, aiProvider, setAIProvider } = useApp();
+  console.log('App Context:', { language, aiProvider });
   const [query, setQuery] = useState("");
   const [source, setSource] = useState<SearchSource>("search");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [aiResponse, setAIResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
 
   const translations = {
     ar: {
@@ -38,7 +37,7 @@ export function App() {
       searchPlaceholder: 'What would you like to search for?',
       searchResults: 'Search Results',
       emptyState: 'What would you like to search for? Type your question and I\'ll help you find an answer',
-      footer: 'Smart Search - All Rights Reserved ©',
+      footer: 'Smart Search - All rights Reserved ©',
       translationCredit: 'Translated with love ♥️ from Bahrain 🇧🇭 | By: ',
       mitLicense: 'All rights are open source and licensed under the MIT license | Developed by '
     }
@@ -52,16 +51,19 @@ export function App() {
   };
 
   const handleSearch = async () => {
-    if (!query.trim()) return;
+    if (!query.trim()) {
+      console.log('Search query is empty');
+      return;
+    }
 
     setLoading(true);
     setError("");
 
     try {
-      const searchResults = await searchSerper(query, source, language);
+      const searchResults = await searchSerper(query, source);
       setResults(searchResults);
 
-      const response = await generateAIResponse(query, searchResults, source, aiProvider, language);
+      const response = await generateAIResponse(query, searchResults, source);
       setAIResponse(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -70,6 +72,11 @@ export function App() {
     }
   };
 
+  useEffect(() => {
+    console.log('Rendering App with state:', { query, source, results, aiResponse, loading, error });
+  }, [query, source, results, aiResponse, loading, error]);
+
+  console.log('Rendering App with state:', { query, source, results, aiResponse, loading, error });
   return (
     <div className={`flex flex-col min-h-screen bg-gradient-to-b from-[#F0F2F5] to-white dark:from-dark-bg dark:to-dark-surface ${language === 'ar' ? 'rtl' : 'ltr'}`}>
       {/* Header */}
@@ -81,7 +88,7 @@ export function App() {
             </h1>
             <div className="flex items-center gap-4">
               <AIProviderSelector
-                selectedProvider={aiProvider}
+                selectedProvider={aiProvider as "ollama" | "groq"}
                 onProviderChange={setAIProvider}
               />
               <div className="flex items-center gap-2">
@@ -173,13 +180,5 @@ export function App() {
     </div>
   );
 }
-
-  useEffect(() => {
-    const elements = document.querySelectorAll('.animate-on-load');
-    gsap.fromTo(elements,
-      { opacity: 0, y: 20 },
-      { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power1.out' }
-    );
-  }, []);
 
 export default App;
