@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { SearchSource, SearchResult } from "./types";
+import { SearchSource, SearchResult, AIProvider } from "./types";
 import { searchSerper, generateAIResponse } from "./services/api";
 import { SearchBar } from "./components/SearchBar";
 import { SourceSelector } from "./components/SourceSelector";
@@ -22,15 +22,6 @@ export function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    console.log("Language:", language);
-    console.log("Query:", query);
-    console.log("Source:", source);
-    console.log("Results:", results);
-    console.log("AI Response:", aiResponse);
-    console.log("Loading:", loading);
-    console.log("Error:", error);
-  }, [language, query, source, results, aiResponse, loading, error]);
 
   const translations = {
     ar: {
@@ -38,19 +29,22 @@ export function App() {
       searchPlaceholder: 'ماذا تريد أن تبحث عنه؟',
       searchResults: 'نتائج البحث',
       emptyState: 'عن ماذا تريد أن تبحث؟ اكتب سؤالك وسأساعدك في العثور على إجابة',
-      footer: 'الباحث الذكي - جميع الحقوق محفوظة ©'
+      footer: 'الباحث الذكي - جميع الحقوق محفوظة ©',
+      translationCredit: 'تمت الترجمة بكل حب ♥️ من البحرين 🇧🇭 | بواسطة: ',
+      mitLicense: 'جميع الحقوق مفتوحة المصدر ومرخصة بموجب رخصة MIT | وبجهود المطور '
     },
     en: {
       title: 'Smart Search - AI-Enhanced Search Engine',
       searchPlaceholder: 'What would you like to search for?',
       searchResults: 'Search Results',
       emptyState: 'What would you like to search for? Type your question and I\'ll help you find an answer',
-      footer: 'Smart Search - All Rights Reserved ©'
+      footer: 'Smart Search - All Rights Reserved ©',
+      translationCredit: 'Translated with love ♥️ from Bahrain 🇧🇭 | By: ',
+      mitLicense: 'All rights are open source and licensed under the MIT license | Developed by '
     }
   };
 
   const handleSourceChange = (newSource: SearchSource) => {
-    console.log("Source changed to:", newSource);
     setSource(newSource);
     setResults([]);
     setAIResponse("");
@@ -60,20 +54,16 @@ export function App() {
   const handleSearch = async () => {
     if (!query.trim()) return;
 
-    console.log("Starting search with query:", query);
     setLoading(true);
     setError("");
 
     try {
-      const searchResults = await searchSerper(query, source);
-      console.log("Search results:", searchResults);
+      const searchResults = await searchSerper(query, source, language);
       setResults(searchResults);
 
-      const response = await generateAIResponse(query, searchResults, source, aiProvider);
-      console.log("AI response:", response);
+      const response = await generateAIResponse(query, searchResults, source, aiProvider, language);
       setAIResponse(response);
     } catch (err) {
-      console.error("Search error:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
@@ -167,13 +157,13 @@ export function App() {
       <footer className="sticky dark:border-dark-surface inset-x-0 bottom-0 bg-slate-950 bg-opacity-90 animate-on-load">
         <div className="container mx-auto px-4 py-6 text-center text-xs" id="footer-pane">
           <p className="text-gray-500 dark:text-dark-text text-xs">
-            {translations[language].footer} {new Date().getFullYear() - 1}
+            {translations[language].footer} {new Date().getFullYear()}
           </p>
           <p className="text-gray-500 dark:text-dark-text">
-            تمت الترجمة بكل حب ♥️ من البحرين 🇧🇭 | بواسطة: <a href="https://github.com/aldoyh" className="text-[#1877F2] dark:text-blue-400">aldoyh</a>
+            {translations[language].translationCredit}<a href="https://github.com/aldoyh" className="text-[#1877F2] dark:text-blue-400">aldoyh</a>
           </p>
           <p className="text-gray-500 dark:text-dark-text">
-            جميع الحقوق مفتوحة المصدر ومرخصة بموجب رخصة MIT | وبجهود المطور <a href="https://github.com/Justmalhar/OpenResearch" target="_blank" rel="noopener noreferrer" className="text-[#1877F2] dark:text-blue-400">Justmalhar</a>
+            {translations[language].mitLicense}<a href="https://github.com/Justmalhar/OpenResearch" target="_blank" rel="noopener noreferrer" className="text-[#1877F2] dark:text-blue-400">Justmalhar</a>
           </p>
           <p className="text-gray-500 dark:text-dark-text letter-spacing-8">
             OPENRESEARCH.AI
@@ -184,22 +174,12 @@ export function App() {
   );
 }
 
-/**
- * Animates all the elements on the page when the page loads
- *
- * @param {HTMLElement} element The element to animate
- */
-function animateOnLoad(element: HTMLElement) {
-  let momTL = gsap.timeline();
-  momTL.add(
-    gsap.fromTo(element, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power1.out' }), "+=0.3"
-  );
-}
-
-// on load animate all the elements
-window.onload = () => {
-  const elements = document.querySelectorAll('.animate-on-load');
-  elements.forEach((element) => animateOnLoad(element as HTMLElement));
-};
+  useEffect(() => {
+    const elements = document.querySelectorAll('.animate-on-load');
+    gsap.fromTo(elements,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power1.out' }
+    );
+  }, []);
 
 export default App;
