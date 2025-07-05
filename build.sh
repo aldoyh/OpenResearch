@@ -3,6 +3,6 @@
 echo "Starting build process"
 
 # Build the project
-# pnpm build
+pnpm build
 
 pnpm dev

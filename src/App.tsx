@@ -184,7 +184,7 @@ export function App() {
         }
       }
       // Call AI after search
-      const aiText = await generateAIResponse(query, fakeResults, source);
+      const aiText = await generateAIResponse(query, fakeResults, source, ollamaModel);
       setAIResponse(aiText);
       setShowAI(true);
     } catch (err: any) {
