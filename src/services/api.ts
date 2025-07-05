@@ -32,3 +32,4 @@ export async function generateAIResponse(
   const prompt = `Query: "${query}" (${source})\nResults: ${JSON.stringify(results)}`;
   return await callOllamaAPI(prompt);
 }
+
