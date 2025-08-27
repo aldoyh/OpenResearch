@@ -6,6 +6,7 @@ if (typeof window === 'undefined') {
   logSearch = require('./services/searchLog').logSearch;
 }
 import { useEffect, useState } from "react";
+import { SearchResult, SearchSource, AIProvider } from './types';
 
 function OllamaStatusIndicator({
   selectedModel,
@@ -83,7 +84,7 @@ function OllamaStatusIndicator({
   );
 }
 
-import { SearchSource, SearchResult } from "./types";
+
 import { generateAIResponse } from "./services/api";
 import { SearchBar } from "./components/SearchBar";
 import { SourceSelector } from "./components/SourceSelector";
@@ -183,10 +184,16 @@ export function App() {
           // Ignore if not supported
         }
       }
-      // Call AI after search
-      const aiText = await generateAIResponse(query, fakeResults, source, ollamaModel);
-      setAIResponse(aiText);
-      setShowAI(true);
+      // Introduce a delay before calling AI to allow initial results to render
+      setTimeout(async () => {
+        try {
+          const aiText = await generateAIResponse(query, fakeResults, source, aiProvider as 'ollama' | 'groq', ollamaModel);
+          setAIResponse(aiText);
+          setShowAI(true);
+        } catch (aiError: any) {
+          setError(aiError.message || 'Error generating AI response.');
+        }
+      }, 500); // 500ms delay
     } catch (err: any) {
       setError(err.message || 'حدث خطأ أثناء البحث.');
     } finally {

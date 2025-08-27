@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SearchResult, SearchSource } from '../types';
+import { motion, AnimatePresence } from 'framer-motion';
 import { WebResult } from './results/WebResult';
 import { ImageResult } from './results/ImageResult';
 import { VideoResult } from './results/VideoResult';
@@ -20,6 +21,7 @@ export function SearchResults({ results, source }: SearchResultsProps) {
   const [processedContent, setProcessedContent] = useState<string | null>(null);
   const [arabicContent, setArabicContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [processingResultId, setProcessingResultId] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('SearchResults mounted with:', { results, source });
@@ -28,6 +30,7 @@ export function SearchResults({ results, source }: SearchResultsProps) {
   const handleLinkClick = async (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
     e.preventDefault();
     setIsProcessing(true);
+    setProcessingResultId(url); // Set the ID of the result being processed
     setError(null);
 
     try {
@@ -39,6 +42,7 @@ export function SearchResults({ results, source }: SearchResultsProps) {
       console.error('Error processing content:', error);
     } finally {
       setIsProcessing(false);
+    setProcessingResultId(null);
     }
   };
 
@@ -55,9 +59,11 @@ export function SearchResults({ results, source }: SearchResultsProps) {
     }
   };
 
-  const processAndTranslate = async (url: string) => {
+  const processAndTranslate = async (result: SearchResult) => {
     setIsProcessing(true);
+    setProcessingResultId(result.link); // Set the ID of the result being processed
     setError(null);
+    const url = result.link;
 
     try {
       // First get the content
@@ -153,11 +159,20 @@ export function SearchResults({ results, source }: SearchResultsProps) {
         </div>
       ) : (
         <div className={`grid gap-6 ${getGridClass()}`}>
-          {results.map((result, index) => {
-            console.log('Rendering result:', result);
-            return (
-              <div key={`${result.link}-${index}`} className="h-full">
-                <div className="flex gap-2">
+          <AnimatePresence>
+            {results.map((result, index) => {
+              const isCurrentResultProcessing = processingResultId === result.link;
+              return (
+                <motion.div
+                  key={`${result.link}-${index}`}
+                  layout
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -50 }}
+                  transition={{ duration: 0.5 }}
+                  className="h-full relative"
+                >
+                  <div className="flex gap-2">
                   <a
                     href={result.link}
                     onClick={(e) => handleLinkClick(e, result.link)}
@@ -166,16 +181,17 @@ export function SearchResults({ results, source }: SearchResultsProps) {
                     <h3 className="text-lg font-semibold mb-2">{result.title}</h3>
                   </a>
                   <button
-                    onClick={() => processAndTranslate(result.link)}
+                    onClick={() => processAndTranslate(result)}
                     className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-900"
                   >
                     Translate & Save
                   </button>
                 </div>
                 {getResultComponent(result)}
-              </div>
-            );
-          })}
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
         </div>
       )}
     </div>
