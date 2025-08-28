@@ -7,6 +7,7 @@ if (typeof window === 'undefined') {
 }
 import { useEffect, useState } from "react";
 import { SearchResult, SearchSource, AIProvider } from './types';
+import { search } from './services/search';
 
 function OllamaStatusIndicator({
   selectedModel,
@@ -158,7 +159,6 @@ export function App() {
     setError("");
   };
 
-  // Simulate search API (replace with real API call)
   const handleSearch = async () => {
     if (!query.trim()) return;
     setLoading(true);
@@ -167,15 +167,10 @@ export function App() {
     setAIResponse("");
     setShowAI(false);
     try {
-      // TODO: Replace with real search API
-      const fakeResults: SearchResult[] = [
-        {
-          title: 'مثال نتيجة بحث',
-          link: 'https://open-research.ai',
-          snippet: 'هذه نتيجة بحث تجريبية.'
-        }
-      ];
-      setResults(fakeResults);
+      // Call the real search API
+      const searchResults = await search(query, source);
+      setResults(searchResults);
+      
       // Log search to SQLite (only if running in Node.js/Electron)
       if (typeof window === 'undefined' && logSearch) {
         try {
@@ -184,16 +179,20 @@ export function App() {
           // Ignore if not supported
         }
       }
-      // Introduce a delay before calling AI to allow initial results to render
-      setTimeout(async () => {
-        try {
-          const aiText = await generateAIResponse(query, fakeResults, source, aiProvider as 'ollama' | 'groq', ollamaModel);
-          setAIResponse(aiText);
-          setShowAI(true);
-        } catch (aiError: any) {
-          setError(aiError.message || 'Error generating AI response.');
-        }
-      }, 500); // 500ms delay
+      
+      // Generate AI response based on search results
+      if (searchResults.length > 0) {
+        // Introduce a delay before calling AI to allow initial results to render
+        setTimeout(async () => {
+          try {
+            const aiText = await generateAIResponse(query, searchResults, source, aiProvider as 'ollama' | 'groq', ollamaModel);
+            setAIResponse(aiText);
+            setShowAI(true);
+          } catch (aiError: any) {
+            setError(aiError.message || 'Error generating AI response.');
+          }
+        }, 500); // 500ms delay
+      }
     } catch (err: any) {
       setError(err.message || 'حدث خطأ أثناء البحث.');
     } finally {
@@ -203,18 +202,18 @@ export function App() {
 
   return (
     <div className={`flex flex-col min-h-screen bg-gradient-to-b from-[#F0F2F5] to-white dark:from-dark-bg dark:to-dark-surface ${language === 'ar' ? 'rtl' : 'ltr'}`}>
-      <header className="w-full py-4 px-4 flex items-center justify-between bg-white/80 dark:bg-dark-bg/80 shadow-sm z-10">
-        <div className="flex items-center gap-2">
-          <img src="/images/oo-ai.png" alt="OpenResearch Logo" className="h-10 w-10 rounded-full shadow" />
-          <span className="font-bold text-xl tracking-widest text-[#1877F2]">OPENRESEARCH.AI</span>
+      <header className="w-full py-5 px-4 flex items-center justify-between bg-white/90 dark:bg-dark-bg/90 backdrop-blur-sm shadow-sm z-10 border-b border-gray-100 dark:border-gray-800">
+        <div className="flex items-center gap-3">
+          <img src="/images/oo-ai.png" alt="OpenResearch Logo" className="h-12 w-12 rounded-xl shadow-md" />
+          <span className="font-bold text-2xl tracking-wider text-[#1877F2] dark:text-blue-400">OPENRESEARCH.AI</span>
         </div>
         <div className="flex items-center gap-2">
           <LanguageToggle />
           <ThemeToggle />
         </div>
       </header>
-      <main className="container mx-auto px-4 py-6 flex-grow dark:bg-dark-bg dark:text-dark-text openresearch-header animate-on-load">
-        <div className="max-w-3xl mx-auto">
+      <main className="container mx-auto px-4 py-8 flex-grow dark:bg-dark-bg dark:text-dark-text openresearch-header animate-on-load">
+        <div className="max-w-4xl mx-auto">
           <ErrorBoundary>
             <AIProviderSelector
               selectedProvider={aiProvider === 'ollama_qwen3' ? 'ollama' : aiProvider}
@@ -227,7 +226,7 @@ export function App() {
             <SearchBar query={query} onQueryChange={setQuery} onSearch={handleSearch} isLoading={loading} />
             <ProcessingOverlay isVisible={loading} message={language === 'ar' ? 'جاري التحميل...' : 'Loading...'} />
             {error && (
-              <div className="bg-red-100 border border-red-300 text-red-700 rounded-lg p-4 my-6 text-center animate-pulse">
+              <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 my-6 text-center animate-pulse shadow-md">
                 {error}
               </div>
             )}
@@ -238,7 +237,7 @@ export function App() {
             {/* Search Results */}
             {results.length > 0 && !loading && (
               <>
-                <h2 className="text-xl font-semibold text-gray-800 mb-4 dark:text-dark-text">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6 dark:text-gray-100">
                   {translations[language]?.searchResults || 'نتائج البحث'}
                 </h2>
                 <SearchResults results={results} source={source} />
@@ -246,7 +245,7 @@ export function App() {
             )}
             {/* Empty State */}
             {!loading && !results.length && !error && (
-              <div className="text-center py-12 animate-fade-in">
+              <div className="text-center py-16 animate-fade-in">
                 <Globe className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500">
                   {translations[language]?.emptyState || 'ابدأ البحث الآن!'}
@@ -257,18 +256,18 @@ export function App() {
         </div>
       </main>
       {/* Footer */}
-      <footer className="sticky dark:border-dark-surface inset-x-0 bottom-0 bg-slate-950 bg-opacity-90 animate-on-load">
+      <footer className="sticky dark:border-dark-surface inset-x-0 bottom-0 bg-gradient-to-r from-gray-900 to-gray-800 animate-on-load">
         <div className="container mx-auto px-4 py-6 text-center text-xs" id="footer-pane">
-          <p className="text-gray-500 dark:text-dark-text text-xs">
+          <p className="text-gray-400 dark:text-dark-text text-xs">
             {translations[language]?.footer || 'جميع الحقوق محفوظة'} {new Date().getFullYear()}
           </p>
-          <p className="text-gray-500 dark:text-dark-text">
-            {translations[language]?.translationCredit}<a href="https://github.com/aldoyh" className="text-[#1877F2] dark:text-blue-400">aldoyh</a>
+          <p className="text-gray-400 dark:text-dark-text">
+            {translations[language]?.translationCredit}<a href="https://github.com/aldoyh" className="text-[#1877F2] dark:text-blue-400 hover:underline">aldoyh</a>
           </p>
-          <p className="text-gray-500 dark:text-dark-text">
-            {translations[language]?.mitLicense}<a href="https://github.com/Justmalhar/OpenResearch" target="_blank" rel="noopener noreferrer" className="text-[#1877F2] dark:text-blue-400">Justmalhar</a>
+          <p className="text-gray-400 dark:text-dark-text">
+            {translations[language]?.mitLicense}<a href="https://github.com/Justmalhar/OpenResearch" target="_blank" rel="noopener noreferrer" className="text-[#1877F2] dark:text-blue-400 hover:underline">Justmalhar</a>
           </p>
-          <p className="text-gray-500 dark:text-dark-text letter-spacing-8">
+          <p className="text-gray-400 dark:text-dark-text letter-spacing-8">
             OPENRESEARCH.AI
           </p>
         </div>

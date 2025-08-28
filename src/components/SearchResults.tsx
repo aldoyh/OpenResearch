@@ -172,17 +172,17 @@ export function SearchResults({ results, source }: SearchResultsProps) {
                   transition={{ duration: 0.5 }}
                   className="h-full relative"
                 >
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 mb-2">
                   <a
                     href={result.link}
                     onClick={(e) => handleLinkClick(e, result.link)}
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
                   >
                     <h3 className="text-lg font-semibold mb-2">{result.title}</h3>
                   </a>
                   <button
                     onClick={() => processAndTranslate(result)}
-                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-900"
+                    className="px-3 py-1 bg-gradient-to-r from-green-600 to-emerald-700 text-white rounded-lg hover:from-green-700 hover:to-emerald-800 text-sm font-medium transition-all"
                   >
                     Translate & Save
                   </button>

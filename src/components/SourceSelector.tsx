@@ -20,18 +20,20 @@ export function SourceSelector({ selectedSource, onSourceChange }: SourceSelecto
   ];
 
   return (
-    <div className="flex flex-wrap justify-center gap-2 mb-6">
+    <div className="flex flex-wrap justify-center gap-3 mb-8">
       {sources.map(({ id, label, icon }) => (
         <button
           key={id}
           onClick={() => onSourceChange(id)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
+          className={`flex items-center gap-2 px-5 py-3 rounded-xl transition-all duration-300 transform hover:-translate-y-0.5 ${
             selectedSource === id
-              ? 'bg-[#1877F2] text-white shadow-md'
-              : 'bg-white text-[#65676B] hover:bg-gray-50'
+              ? 'bg-gradient-to-r from-[#1877F2] to-[#0d5cb6] text-white shadow-lg'
+              : 'bg-white text-[#65676B] hover:bg-gray-100 shadow-sm'
           }`}
         >
-          {icon}
+          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/20">
+            {icon}
+          </div>
           <span className="font-medium">{label}</span>
         </button>
       ))}

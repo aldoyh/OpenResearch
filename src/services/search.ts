@@ -1,138 +1,103 @@
 import { SearchSource, SearchResult } from '../types';
 
-// Serper.dev API key (must be prefixed with VITE_ in .env to be exposed to the client)
-const SERPER_API_KEY = (import.meta as any).env?.VITE_SERPER_API_KEY as string | undefined;
-
-// Map our source to Serper.dev endpoint path
-function getSerperEndpointPath(source: SearchSource): string {
-  switch (source) {
-    case 'images':
-      return 'images';
-    case 'videos':
-      return 'videos';
-    case 'news':
-      return 'news';
-    case 'shopping':
-      return 'shopping';
-    case 'scholar':
-      return 'scholar';
-    case 'places':
-      return 'places';
-    case 'patents':
-      return 'patents';
-    default:
-      return 'search';
-  }
-}
+const SERPER_API_KEY = import.meta.env.VITE_SERPER_API_KEY;
 
 export async function search(query: string, source: SearchSource): Promise<SearchResult[]> {
   if (!SERPER_API_KEY) {
-    throw new Error('VITE_SERPER_API_KEY is not defined. Please set it in your .env file.');
+    throw new Error('SERPER_API_KEY is not defined. Please set it in your .env file.');
   }
 
-  const endpoint = `https://google.serper.dev/${getSerperEndpointPath(source)}`;
+  // Map sources to Serper API endpoints
+  const endpoint = 'https://serpapi.com/search';
+  
+  // Prepare the search parameters based on source
+  const params: Record<string, string> = {
+    q: query,
+    api_key: SERPER_API_KEY,
+  };
 
-  // Localized search: respect saved language if present
-  const lang = (typeof window !== 'undefined' 
-    ? (localStorage.getItem('language') as 'ar' | 'en')
-    : undefined) || 'ar';
-  // Choose a sensible default geo for Arabic vs English
-  const gl = lang === 'ar' ? 'sa' : 'us';
-  const hl = lang === 'ar' ? 'ar' : 'en';
+  // Adjust parameters based on source type
+  switch (source) {
+    case 'images':
+      params.tbm = 'isch';
+      break;
+    case 'videos':
+      params.tbm = 'vid';
+      break;
+    case 'news':
+      params.tbm = 'nws';
+      break;
+    case 'shopping':
+      params.tbm = 'shop';
+      break;
+    default:
+      // Default web search
+      break;
+  }
 
   try {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-KEY': SERPER_API_KEY,
-      },
-      body: JSON.stringify({ q: query, gl, hl, num: 10 })
-    });
-
+    // For sources that Serper doesn't directly support, we'll use web search
+    // and filter/transform results as needed
+    const response = await fetch(`https://serpapi.com/search.json?${new URLSearchParams(params)}`);
+    
     if (!response.ok) {
-      const text = await response.text().catch(() => '');
-      throw new Error(`Serper API error ${response.status}: ${response.statusText} ${text}`.trim());
+      throw new Error(`Serper API error: ${response.statusText}`);
     }
-
+    
     const data = await response.json();
-
+    
     // Transform Serper results to our SearchResult format
     let results: SearchResult[] = [];
-
+    
     switch (source) {
-      case 'images': {
-        const items = (data.images || data.images_results || []) as any[];
-        results = items.map((item: any) => ({
-          title: item.title || item.source || 'Untitled',
-          link: item.link || item.imageUrl || item.thumbnailUrl,
-          imageUrl: item.thumbnailUrl || item.imageUrl || '',
+      case 'images':
+        results = (data.images_results || []).map((item: any) => ({
+          title: item.title || 'Untitled',
+          link: item.link,
+          imageUrl: item.thumbnail,
         }));
         break;
-      }
-
-      case 'videos': {
-        const items = (data.videos || data.video_results || []) as any[];
-        results = items.map((item: any) => ({
+        
+      case 'videos':
+        results = (data.video_results || []).map((item: any) => ({
           title: item.title,
-          link: item.link || item.url,
-          thumbnail: item.thumbnail || item.thumbnailUrl || '',
+          link: item.link,
+          thumbnail: item.thumbnail,
           duration: item.duration || '',
-          channel: item.channel || item.source || '',
+          channel: item.channel || '',
           views: item.views || '',
         }));
         break;
-      }
-
-      case 'news': {
-        const items = (data.news || data.news_results || []) as any[];
-        results = items.map((item: any) => ({
-          title: item.title,
-          link: item.link || item.url,
-          snippet: item.snippet || item.summary || '',
-          imageUrl: item.imageUrl || item.thumbnail || '',
-        }));
-        break;
-      }
-
-      case 'shopping': {
-        const items = (data.shopping || data.shopping_results || []) as any[];
-        results = items.map((item: any) => ({
-          title: item.title,
-          link: item.link || item.url,
-          price: item.price || item.priceFormatted || '',
-          rating: item.rating || item.stars || 0,
-          imageUrl: item.imageUrl || item.thumbnail || '',
-        }));
-        break;
-      }
-
-      case 'scholar': {
-        const items = (data.organic || data.scholar || []) as any[];
-        results = items.map((item: any) => ({
-          title: item.title,
-          link: item.link || item.url,
-          snippet: item.snippet || item.description || '',
-          authors: item.authors || [],
-          year: item.year ? String(item.year) : '',
-          publisher: item.publication || item.publisher || '',
-        }));
-        break;
-      }
-
-      case 'places':
-      case 'patents':
-      default: {
-        const items = (data.organic || data.organic_results || []) as any[];
-        results = items.map((item: any) => ({
+        
+      case 'news':
+        results = (data.news_results || []).map((item: any) => ({
           title: item.title,
           link: item.link,
-          snippet: item.snippet || item.description || '',
+          snippet: item.snippet || '',
+          imageUrl: item.thumbnail,
         }));
         break;
-      }
+        
+      case 'shopping':
+        results = (data.shopping_results || []).map((item: any) => ({
+          title: item.title,
+          link: item.link,
+          price: item.price || '',
+          rating: item.rating || 0,
+          imageUrl: item.thumbnail,
+        }));
+        break;
+        
+      default:
+        // Web search results
+        results = (data.organic_results || []).map((item: any) => ({
+          title: item.title,
+          link: item.link,
+          snippet: item.snippet || '',
+        }));
+        break;
     }
-
+    
     return results;
   } catch (error) {
     console.error('Error fetching search results:', error);

@@ -65,14 +65,14 @@ export function WebResult({ result }: { result: SearchResult }) {
   };
 
   return (
-    <div className="bg-white dark:bg-dark-surface rounded-xl p-6 shadow-sm hover:shadow-md transition-all">
-      <a href={result.link} target="_blank" rel="noopener noreferrer" className="block mb-4">
-        <h3 className="text-lg font-semibold text-[#1877F2] dark:text-blue-400 mb-2 hover:underline flex items-center gap-2">
+    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+      <a href={result.link} target="_blank" rel="noopener noreferrer" className="block">
+        <h3 className="text-lg font-semibold text-[#1877F2] mb-2 hover:underline dark:text-blue-400">
           {result.title}
           <ExternalLink className="w-4 h-4 opacity-50" />
         </h3>
-        <p className="text-gray-600 dark:text-gray-300">{result.snippet}</p>
-        <span className="text-sm text-green-700 dark:text-green-400 hover:underline mt-2 block">
+        <p className="text-gray-600 mb-3 dark:text-gray-300">{result.snippet}</p>
+        <span className="text-sm text-green-700 hover:underline mt-2 block dark:text-green-400">
           {result.link}
         </span>
       </a>
