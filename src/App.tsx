@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { SearchSource, SearchResult } from "./types";
 import { searchSerper, generateAIResponse } from "./services/api";
 import { SearchBar } from "./components/SearchBar";
 import { SourceSelector } from "./components/SourceSelector";
 import { SearchResults } from "./components/SearchResults";
 import { AIResponse } from "./components/AIResponse";
-import { Globe, Github } from "lucide-react";
+import { Globe } from "lucide-react";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeToggle } from './components/ThemeToggle';
 import { LanguageToggle } from './components/LanguageToggle';
+import { AIProviderSettings } from './components/AIProviderSettings';
 import { useApp } from './contexts/AppContext';
 
 export function App() {
@@ -70,6 +71,7 @@ export function App() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-2">
+              <AIProviderSettings />
               <ThemeToggle />
               <LanguageToggle />
             </div>

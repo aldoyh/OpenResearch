@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 interface AIResponseProps {
@@ -30,8 +29,8 @@ export function AIResponse({ response }: AIResponseProps) {
                 {children}
               </tbody>
             ),
-            tr: ({ children, isHeader }) => (
-              <tr className={`${isHeader ? '' : 'hover:bg-gray-50'}`}>
+            tr: ({ children }) => (
+              <tr className="hover:bg-gray-50">
                 {children}
               </tr>
             ),
@@ -52,15 +51,16 @@ export function AIResponse({ response }: AIResponseProps) {
               </blockquote>
             ),
             // Style code blocks
-            code: ({ inline, children }) => (
-              inline ? 
+            code: ({ children, ...props }: any) => {
+              const inline = !props.className;
+              return inline ? 
                 <code className="bg-gray-100 rounded px-1 py-0.5 text-sm font-mono">
                   {children}
                 </code> :
                 <pre className="bg-gray-100 rounded-lg p-4 overflow-x-auto">
                   <code className="text-sm font-mono">{children}</code>
-                </pre>
-            ),
+                </pre>;
+            },
             // Style headings
             h2: ({ children }) => (
               <h2 className="text-2xl font-bold text-gray-900 mt-8 mb-4">
