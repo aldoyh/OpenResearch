@@ -10,6 +10,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { ThemeToggle } from './components/ThemeToggle';
 import { LanguageToggle } from './components/LanguageToggle';
 import { AIProviderSettings } from './components/AIProviderSettings';
+import { SavedArticles } from './components/SavedArticles';
 import { useApp } from './contexts/AppContext';
 
 export function App() {
@@ -150,6 +151,11 @@ export function App() {
           </p>
         </div>
       </footer>
+
+      {/* Saved Articles Floating Button */}
+      <SavedArticles />
+
+      <Analytics />
     </div>
   );
 }
