@@ -109,9 +109,13 @@ VITE_SERPER_API_KEY=your_serper_api_key
 
 ---
 
+<div style="text-align: right;">
+
+
 - AI-powered search engine for Open-Research.ai
 - AI Rephrasing Feature + Localized to Arabic by*: [@aldoyh](https://github.com/aldoyh)
 
+</div>
 *ترجمة وتعريب*: [@aldoyh](https://github.com/aldoyh)
 
 <style>
