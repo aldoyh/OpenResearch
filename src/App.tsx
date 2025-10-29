@@ -6,7 +6,7 @@ if (typeof window === 'undefined') {
   logSearch = require('./services/searchLog').logSearch;
 }
 import { useEffect, useState } from "react";
-import { SearchResult, SearchSource, AIProvider } from './types';
+import { SearchResult, SearchSource } from './types';
 import { search } from './services/search';
 
 function OllamaStatusIndicator({

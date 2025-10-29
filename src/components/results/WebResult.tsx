@@ -1,71 +1,13 @@
-import { useState } from 'react';
 import { SearchResult } from '../../types';
 import { Repeat, PenTool, Save, Loader2, FileText, ExternalLink } from 'lucide-react';
 import { extractContent, rephraseContent, rewriteContent, saveToMarkdown } from '../../services/contentProcessor';
 
 export function WebResult({ result }: { result: SearchResult }) {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [processedContent, setProcessedContent] = useState<string | null>(null);
-  const [processingType, setProcessingType] = useState<'rephrase' | 'rewrite' | null>(null);
-  const [showProcessed, setShowProcessed] = useState(false);
-
-  const handleRephrase = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsProcessing(true);
-    setProcessingType('rephrase');
-    try {
-      const content = await extractContent(result.link);
-      const rephrased = await rephraseContent(content, result.title);
-      setProcessedContent(rephrased);
-      setShowProcessed(true);
-    } catch (error) {
-      console.error('Error rephrasing:', error);
-      alert('Failed to rephrase content. Please try again.');
-    } finally {
-      setIsProcessing(false);
-      setProcessingType(null);
-    }
-  };
-
-  const handleRewrite = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsProcessing(true);
-    setProcessingType('rewrite');
-    try {
-      const content = await extractContent(result.link);
-      const rewritten = await rewriteContent(content, result.title);
-      setProcessedContent(rewritten);
-      setShowProcessed(true);
-    } catch (error) {
-      console.error('Error rewriting:', error);
-      alert('Failed to rewrite content. Please try again.');
-    } finally {
-      setIsProcessing(false);
-      setProcessingType(null);
-    }
-  };
-
-  const handleSave = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    try {
-      const contentToSave = processedContent || result.snippet || 'No content available';
-      saveToMarkdown(contentToSave, result.title, {
-        url: result.link,
-        source: 'web',
-        originalSnippet: result.snippet || ''
-      });
-      alert('Article saved successfully!');
-    } catch (error) {
-      console.error('Error saving:', error);
-      alert('Failed to save article. Please try again.');
-    }
-  };
-
+  // Type guard for WebResult
+  if (!('snippet' in result)) return null;
+  
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+    <div className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow dark:bg-dark-surface">
       <a href={result.link} target="_blank" rel="noopener noreferrer" className="block">
         <h3 className="text-lg font-semibold text-[#1877F2] mb-2 hover:underline dark:text-blue-400">
           {result.title}

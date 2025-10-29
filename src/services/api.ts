@@ -1,6 +1,5 @@
 import { SearchSource, SearchResult } from '../types';
 import OpenAI from 'openai';
-import { SearchSource, SearchResult } from "../types";
 
 const OLLAMA_API_URL = 'http://localhost:11434/api/generate';
 const OLLAMA_TAGS_URL = 'http://localhost:11434/api/tags';
